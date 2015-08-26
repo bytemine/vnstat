@@ -149,6 +149,8 @@ int main(int argc, char *argv[])
 		daemonize();
 	}
 
+	initmacs();
+
 	/* main loop */
 	while (s.running) {
 

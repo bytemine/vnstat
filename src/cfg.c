@@ -224,6 +224,7 @@ int loadcfg(const char *cfgfile)
 		{ "CRxD", cfg.crxd, 0, 8, 0 },
 		{ "CTx", cfg.ctx, 0, 8, 0 },
 		{ "CTxD", cfg.ctxd, 0, 8, 0 },
+		{ "UseMAC", 0, &cfg.usemac, 0, 0 },
 		{ 0, 0, 0, 0, 0 }
 	};
 

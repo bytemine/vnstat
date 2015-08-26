@@ -6,6 +6,9 @@
 #endif
 
 int getifinfo(const char *iface);
+void initmacs(void);
+const char *if2mac(const char *iface);
+const char *mac2if(const char *mac);
 int getiflist(char **ifacelist, int showspeed);
 int readproc(const char *iface);
 int readsysclassnet(const char *iface);

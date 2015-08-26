@@ -1,13 +1,21 @@
 #include "common.h"
 #include "dbaccess.h"
+#include "ifinfo.h"
 
 int readdb(const char *iface, const char *dirname)
 {
 	FILE *db;
 	char file[512], backup[512];
 
-	snprintf(file, 512, "%s/%s", dirname, iface);
-	snprintf(backup, 512, "%s/.%s", dirname, iface);
+	const char *iffn = if2mac(iface);
+	if (!iffn && cfg.usemac) {
+		snprintf(errorstring, 512, "Cannot get MAC for %s\n", iface);
+		printe(PT_Error);
+		return -1;
+	}
+
+	snprintf(file, 512, "%s/%s", dirname, iffn);
+	snprintf(backup, 512, "%s/.%s", dirname, iffn);
 
 	if ((db=fopen(file,"r"))==NULL) {
 		snprintf(errorstring, 512, "Unable to read database \"%s\": %s", file, strerror(errno));
@@ -209,8 +217,15 @@ int writedb(const char *iface, const char *dirname, int newdb)
 	FILE *db;
 	char file[512], backup[512];
 
-	snprintf(file, 512, "%s/%s", dirname, iface);
-	snprintf(backup, 512, "%s/.%s", dirname, iface);
+	const char *iffn = if2mac(iface);
+	if (!iffn && cfg.usemac) {
+		snprintf(errorstring, 512, "2 Cannot get MAC for %s\n", iface);
+		printe(PT_Error);
+		return -1;
+	}
+
+	snprintf(file, 512, "%s/%s", dirname, iffn);
+	snprintf(backup, 512, "%s/.%s", dirname, iffn);
 
 	/* try to make backup of old data if this isn't a new database */
 	if (!newdb && !backupdb(file, backup)) {
@@ -374,7 +389,14 @@ int checkdb(const char *iface, const char *dirname)
 	char file[512];
 	struct statvfs buf;
 
-	snprintf(file, 512, "%s/%s", dirname, iface);
+	const char *iffn = if2mac(iface);
+	if (!iffn && cfg.usemac) {
+		snprintf(errorstring, 512, "3 Cannot get MAC for %s\n", iface);
+		printe(PT_Error);
+		return -1;
+	}
+
+	snprintf(file, 512, "%s/%s", dirname, iffn);
 
 	if (statvfs(file, &buf)==0) {
 		return 1; /* file exists */
@@ -387,11 +409,18 @@ int removedb(const char *iface, const char *dirname)
 {
 	char file[512];
 
+	const char *iffn = if2mac(iface);
+	if (!iffn && cfg.usemac) {
+		snprintf(errorstring, 512, "4 Cannot get MAC for %s\n", iface);
+		printe(PT_Error);
+		return -1;
+	}
+
 	/* remove backup first */
-	snprintf(file, 512, "%s/.%s", dirname, iface);
+	snprintf(file, 512, "%s/.%s", dirname, iffn);
 	unlink(file);
 
-	snprintf(file, 512, "%s/%s", dirname, iface);
+	snprintf(file, 512, "%s/%s", dirname, iffn);
 	if (unlink(file)!=0) {
 		return 0;
 	}

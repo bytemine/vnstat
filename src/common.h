@@ -230,6 +230,7 @@ typedef struct {
 	char daemonuser[33], daemongroup[33];
 	int32_t updateinterval, pollinterval, saveinterval, offsaveinterval, savestatus, uselogging;
 	int32_t createdirs, updatefileowner, bwdetection, bwdetectioninterval, utflocale;
+	int32_t usemac;
 } CFG;
 
 /* internal interface information structure */

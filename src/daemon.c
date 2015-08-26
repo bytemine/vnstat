@@ -495,7 +495,7 @@ void filldatabaselist(DSTATE *s)
 			printf("\nProcessing file \"%s/%s\"...\n", s->dirname, di->d_name);
 		}
 
-		if (!cacheadd(di->d_name, s->sync)) {
+		if (!cacheadd(mac2if(di->d_name), s->sync)) {
 			snprintf(errorstring, 512, "Cache memory allocation failed, exiting.");
 			printe(PT_Error);
 

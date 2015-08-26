@@ -357,6 +357,8 @@ int main(int argc, char *argv[]) {
 	}
 	p.interface[31]='\0';
 
+	initmacs();
+
 	/* parameter handlers */
 	handledbmerge(&p);
 	handlecounterreset(&p);
@@ -779,7 +781,7 @@ void handleupdate(PARAMS *p)
 			}
 
 			p->files++;
-			strncpy_nt(p->interface, di->d_name, 32);
+			strncpy_nt(p->interface, mac2if(di->d_name), 32);
 			if (debug)
 				printf("\nProcessing file \"%s/%s\"...\n", p->dirname, p->interface);
 			p->newdb=readdb(p->interface, p->dirname);
@@ -902,7 +904,7 @@ void handleshowdatabases(PARAMS *p)
 			if ((di->d_name[0]=='.') || (strcmp(di->d_name, DATABASEFILE)==0)) {
 				continue;
 			}
-			strncpy_nt(p->interface, di->d_name, 32);
+			strncpy_nt(p->interface, mac2if(di->d_name), 32);
 			if (debug)
 				printf("\nProcessing file \"%s/%s\"...\n", p->dirname, p->interface);
 			p->newdb=readdb(p->interface, p->dirname);

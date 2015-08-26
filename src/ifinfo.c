@@ -43,6 +43,80 @@ int getifinfo(const char *iface)
 	return 1;
 }
 
+static struct if2mac {
+	char *i;
+	char m[22];
+	struct if2mac *n;
+} *i2m = 0;
+
+const char *if2mac (const char *iface)
+{
+	if (!cfg.usemac) return iface;
+
+	if (!strncmp(iface, "MAC-", 4)) {
+		if (debug)
+			printf ("is a MAC: %s\n", iface);
+		return iface;
+	}
+
+	struct if2mac **p;
+	for (p = &i2m; *p; p = &(*p)->n)
+		if (strcmp(iface, (*p)->i) == 0)
+			return (*p)->m;
+
+	if (*p = malloc(sizeof(struct if2mac))) {
+		(*p)->n = 0;
+		(*p)->i = strdup(iface);
+		char a[256];
+		snprintf (a, sizeof a, "%s/%s/address", SYSCLASSNET, iface);
+
+		int f = open(a, O_RDONLY);
+		strcpy((*p)->m, "MAC-");
+		if (read(f, (*p)->m + 4, 17) != 17) {
+			free(*p);
+			*p = 0;
+			return 0;
+		}
+		(*p)->m[6] = (*p)->m[9] = (*p)->m[12] = (*p)->m[15] = (*p)->m[18] = '-';
+		(*p)->m[21] = 0;
+		if (debug)
+			printf ("added (%s, %s)\n", (*p)->i, (*p)->m);
+
+		return (*p)->m;
+	}
+
+	return 0;
+}
+
+const char *mac2if (const char *mac)
+{
+	if (!cfg.usemac) return mac;
+
+	if (strncmp(mac, "MAC-", 4)) {
+		if (debug)
+			printf ("not a MAC: %s\n", mac);
+		return mac;
+	}
+
+	struct if2mac *p;
+	for (p = i2m; p; p = p->n)
+		if (strcmp(mac, p->m) == 0)
+			return p->i;
+
+	return "unknown";
+}
+
+void initmacs(void)
+{
+	if (!cfg.usemac) return;
+
+	char *ifl = 0, *s;
+	if (getiflist(&ifl, 0))
+		for (s = strtok(ifl, " "); s != NULL; s = strtok(NULL, " "))
+			(void)if2mac(s);
+	return;
+}
+
 int getiflist(char **ifacelist, int showspeed)
 {
 	uint32_t speed;
