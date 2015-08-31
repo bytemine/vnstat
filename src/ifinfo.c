@@ -571,6 +571,14 @@ uint32_t getifspeed(const char *iface)
 	FILE *fp;
 	char file[64], buffer[64];
 
+	// do not report (fake) speed for tun ifs
+	snprintf(file, 64, "%s/%s/tun_flags", SYSCLASSNET, iface);
+	if (access(file, F_OK) == 0) {
+		if (debug)
+			printf ("Not reporting speed for tun: %s\n", file);
+		return 0;
+	}
+
 	snprintf(file, 64, "%s/%s/speed", SYSCLASSNET, iface);
 
 	if ((fp=fopen(file, "r"))==NULL) {
