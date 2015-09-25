@@ -196,7 +196,7 @@ and most can be changed later from the config file.
 #define CREATEDIRS 1
 #define UPDATEFILEOWNER 1
 #define LOGFILE "/var/log/vnstat/vnstat.log"
-#define PIDFILE "/var/run/vnstat/vnstat.pid"
+#define PIDFILE "/var/run/vnstat.pid"
 
 /* no transparency by default */
 #define TRANSBG 0
